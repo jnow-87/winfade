@@ -165,6 +165,10 @@ int xlib_win_unmap(xlib_t *xobj, xlib_win_t *win){
 	return -(XUnmapWindow(xobj->dpy, win->id) == 0);
 }
 
+int xlib_mouse_moveto(xlib_t *xobj, int x, int y){
+	return -(XWarpPointer(xobj->dpy, None, xobj->root, 0, 0, 0, 0, x, y) == 0);
+}
+
 
 /* local functions */
 static int error_handler(Display *dsp, XErrorEvent *evt){

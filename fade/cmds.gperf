@@ -1,0 +1,32 @@
+/* output declarations */
+%struct-type
+%omit-struct-type
+%readonly-tables
+%global-table
+%includes
+%language=C
+
+/* delimiter */
+%delimiters=","
+
+/* naming */
+%define slot-name name
+%define hash-function-name cmds_hash
+%define lookup-function-name cmds_lookup
+
+
+/* c-code */
+%{
+	#include <fade/cmds.h>
+%}
+
+/* struct-type definition */
+struct cmd_t;
+
+
+%%
+# command	hdlr
+select,		cmd_select
+fade,		cmd_fade
+dump,		cmd_dump
+%%

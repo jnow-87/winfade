@@ -1,0 +1,10 @@
+#
+# Automatically generated file; DO NOT EDIT.
+# winfade configuration
+#
+CONFIG_ANIM_STEPS=5
+CONFIG_ANIM_DELAY_MS=25
+CONFIG_GROUP_FILE_PATTERN="/tmp/.winfade.%zu"
+CONFIG_BUILD_RELEASE=y
+# CONFIG_BUILD_DEBUG is not set
+CONFIG_BUILD_TYPE=release

@@ -1,0 +1,33 @@
+mainmenu "winfade configuration"
+
+config ANIM_STEPS
+	int "number of fade in/out steps (default)"
+	default 5
+
+config ANIM_DELAY_MS
+	int "delay [ms] between fade in/out steps (default)"
+	default 25
+
+config GROUP_FILE_PATTERN
+	qstring "state file pattern"
+	default "/tmp/.winfade.%zu"
+
+# build config
+choice
+	prompt "Build type"
+
+	config BUILD_RELEASE
+		bool "release"
+
+	config BUILD_DEBUG
+		bool "debug"
+endchoice
+
+menu "Hidden"
+	visible if 0
+
+	config BUILD_TYPE
+		string "Build type"
+		default "debug" if BUILD_DEBUG
+		default "release" if BUILD_RELEASE
+endmenu

@@ -61,5 +61,7 @@ int xlib_win_move(xlib_t *xobj, xlib_win_t *win, int x, int y);
 int xlib_win_map(xlib_t *xobj, xlib_win_t *win);
 int xlib_win_unmap(xlib_t *xobj, xlib_win_t *win);
 
+int xlib_mouse_moveto(xlib_t *xobj, int x, int y);
+
 
 #endif // XLIB_H

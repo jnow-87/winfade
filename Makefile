@@ -53,9 +53,11 @@ gperfflags := $(GPERFFLAGS) $(CONFIG_GPERFFLAGS)
 ###   targets   ###
 ###################
 
+
 ####
 ## build
 ####
+
 .PHONY: all
 ifeq ($(CONFIG_BUILD_DEBUG),y)
 all: cflags += -g
@@ -68,6 +70,7 @@ all: $(lib) $(bin)
 ####
 ## cleanup
 ####
+
 .PHONY: clean
 clean:
 	$(rm) $(filter-out $(patsubst %/,%,$(dir $(build_tree)/$(scripts_dir))),$(wildcard $(build_tree)/*))
@@ -79,18 +82,15 @@ distclean:
 ####
 ## install
 ####
-.PHONY: install-user
-install-user: all
 
-.PHONY: install-system
-install-system: all
+include $(scripts_dir)/install.make
+
+.PHONY: install
+install: all
+	$(call install,$(build_tree)/fade/winfade)
+	$(call install,$(build_tree)/mousemv/mousemv)
 
 .PHONY: uninstall
 uninstall:
-
-####
-## help
-####
-
-.PHONY: help
-help:
+	$(call uninstall,$(PREFIX)/winfade)
+	$(call uninstall,$(PREFIX)/mousemv)

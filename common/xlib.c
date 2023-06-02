@@ -187,17 +187,14 @@ static int monitors_init(xlib_t *xobj){
 	/* get xrand screen resource and allocate monitors */
 	res = XRRGetScreenResources(xobj->dpy, xobj->root);
 
-	if(res->noutput != res->ncrtc)
-		goto_err(end, "number of outputs and crtcs don't match\n");
-
 	xobj->nmonitors = res->ncrtc;
-	xobj->monitors = malloc(sizeof(xlib_monitor_t) * res->ncrtc);
+	xobj->monitors = malloc(sizeof(xlib_monitor_t) * xobj->nmonitors);
 
 	if(xobj->monitors == 0x0)
 		goto_err(end, "out of memory");
 
 	/* init monitor with xrand crtc info */
-	for(int i=0; i<res->ncrtc; i++){
+	for(size_t i=0; i<xobj->nmonitors; i++){
 		monitor = xobj->monitors + i;
 		cinfo = XRRGetCrtcInfo(xobj->dpy, res, res->crtcs[i]);
 
@@ -215,7 +212,7 @@ static int monitors_init(xlib_t *xobj){
 	for(int i=0; i<res->noutput; i++){
 		oinfo = XRRGetOutputInfo(xobj->dpy, res, res->outputs[i]);
 
-		for(int j=0; j<res->ncrtc; j++){
+		for(size_t j=0; j<xobj->nmonitors; j++){
 			if(xobj->monitors[j].xid == oinfo->crtc){
 				xobj->monitors[j].connected = (oinfo->connection == 0);
 				break;

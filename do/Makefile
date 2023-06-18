@@ -1,6 +1,6 @@
-bin-y := windo
+bin-y := xdo
 
-windo-y := \
+xdo-y := \
 	main.o \
 	opts.o \
 	cmds.o \
@@ -9,5 +9,5 @@ windo-y := \
 
 $(loc_build_tree)/main.o: $(loc_build_tree)/cmds.hash.h
 
-windo-ldlibs := -lX11 -lXrandr
+xdo-ldlibs := -lX11 -lXrandr
 cmds.hash-cflags-y := -Wno-missing-field-initializers

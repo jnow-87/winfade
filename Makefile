@@ -88,9 +88,11 @@ include $(scripts_dir)/install.make
 .PHONY: install
 install: all
 	$(call install,$(build_tree)/fade/winfade)
+	$(call install,$(build_tree)/do/xdo)
 	$(call install,$(build_tree)/mousemv/mousemv)
 
 .PHONY: uninstall
 uninstall:
 	$(call uninstall,$(PREFIX)/winfade)
+	$(call uninstall,$(PREFIX)/xdo)
 	$(call uninstall,$(PREFIX)/mousemv)

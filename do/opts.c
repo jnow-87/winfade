@@ -8,7 +8,7 @@
 
 
 /* macros */
-#define PROGNAME			"windo"
+#define PROGNAME				"xdo"
 
 #define DEFAULT_WIN			0
 #define DEFAULT_DESKTOP		-1

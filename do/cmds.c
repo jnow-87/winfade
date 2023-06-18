@@ -5,7 +5,7 @@
 
 
 /* global functions */
-int cmd_win_info(xlib_t *xobj, xlib_win_t *win, opts_t *opts){
+int cmd_screen_info(xlib_t *xobj, xlib_win_t *win, opts_t *opts){
 	xlib_monitor_t *mon;
 
 
@@ -23,24 +23,37 @@ int cmd_win_info(xlib_t *xobj, xlib_win_t *win, opts_t *opts){
 		);
 	}
 
-	INFO(
-		"\n"
-		"window id=%u\n"
-		"    desktop: %d\n"
-		"    monitor: %d\n"
-		"    left,top: %d,%d\n"
-		"    right,bottom: %d,%d\n"
-		"    dimensions: %dx%d\n"
-		, (int)win->id
-		, win->desktop
-		, win->monitor
-		, win->left
-		, win->top
-		, win->right
-		, win->bottom
-		, win->width
-		, win->height
-	);
+	return 0;
+}
+
+int cmd_win_info(xlib_t *xobj, xlib_win_t *win, opts_t *opts){
+	for(int i=0; i<opts->cmd_argc; i++){
+		if(strcmp(opts->cmd_argv[i], "id") == 0)			INFO("%u ", (unsigned int)win->id);
+		else if(strcmp(opts->cmd_argv[i], "name") == 0)		INFO("%s ", win->name);
+		else if(strcmp(opts->cmd_argv[i], "desktop") == 0)	INFO("%d ", win->desktop);
+		else if(strcmp(opts->cmd_argv[i], "monitor") == 0)	INFO("%d ", win->monitor);
+		else if(strcmp(opts->cmd_argv[i], "position") == 0)	INFO("%d %d ", win->left, win->top);
+		else if(strcmp(opts->cmd_argv[i], "geometry") == 0)	INFO("%u %u ", win->width, win->height);
+		else												return ERROR("unkown property: %s", opts->cmd_argv[i]);
+	}
+
+	if(opts->cmd_argc == 0){
+		INFO("id: %u\n"
+			 "name: %d\n"
+			 "desktop: %d\n"
+			 "monitor: %d\n"
+			 "position: %d %d\n"
+			 "geometry: %dx%d\n"
+			 , (unsigned int)win->id
+			 , win->name
+			 , win->desktop
+			 , win->monitor
+			 , win->left, win->top
+			 , win->width, win->height
+		);
+	}
+	else
+		INFO("\n");
 
 	return 0;
 }

@@ -28,6 +28,7 @@ struct cmd_t;
 
 %%
 # command		hdlr				required args
+screen-info,	cmd_screen_info,	0
 win-info,		cmd_win_info,		-1
 win-focus,		cmd_win_focus,		0
 win-map,		cmd_win_map,		0

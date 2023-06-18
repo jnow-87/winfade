@@ -57,7 +57,7 @@ void xlib_win_info(xlib_win_t *win, log_lvl_t lvl, char const *indent);
 
 int xlib_win_focus(xlib_t *xobj, xlib_win_t *win);
 int xlib_win_summon(xlib_t *xobj, xlib_win_t *win, int desktop, int x, int y);
-int xlib_win_move(xlib_t *xobj, xlib_win_t *win, int x, int y);
+int xlib_win_move(xlib_t *xobj, xlib_win_t *win, int x, int y, bool relative);
 int xlib_win_map(xlib_t *xobj, xlib_win_t *win);
 int xlib_win_unmap(xlib_t *xobj, xlib_win_t *win);
 

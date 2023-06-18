@@ -12,10 +12,14 @@ struct cmd_t;
 
 /* types */
 typedef struct{
-	Window win;
+	long long win;
 	int desktop;
 
 	struct cmd_t const *cmd;
+	int cmd_argc;
+	char **cmd_argv;
+
+	bool relative;
 } opts_t;
 
 

@@ -142,17 +142,22 @@ int xlib_win_summon(xlib_t *xobj, xlib_win_t *win, int desktop, int x, int y){
 
 	win->desktop = desktop;
 
-	return xlib_win_move(xobj, win, x - win->left, y - win->top);
+	return xlib_win_move(xobj, win, x, y, false);
 }
 
-int xlib_win_move(xlib_t *xobj, xlib_win_t *win, int x, int y){
-	if(XMoveWindow(xobj->dpy, win->id, win->left + x, win->top + y) == 0)
+int xlib_win_move(xlib_t *xobj, xlib_win_t *win, int x, int y, bool relative){
+	if(relative){
+		x += win->left;
+		y += win->top;
+	}
+
+	if(XMoveWindow(xobj->dpy, win->id, x, y) == 0)
 		return -1;
 
-	win->left += x;
-	win->top += y;
-	win->right += x;
-	win->bottom += y;
+	win->left = x;
+	win->top = y;
+	win->right = win->left + win->width;
+	win->bottom = win->top + win->height;
 
 	return 0;
 }

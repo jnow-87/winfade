@@ -19,7 +19,8 @@ typedef struct{
 	int cmd_argc;
 	char **cmd_argv;
 
-	bool relative;
+	bool relative,
+		 only_visible;
 } opts_t;
 
 

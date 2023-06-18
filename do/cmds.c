@@ -58,6 +58,20 @@ int cmd_win_info(xlib_t *xobj, xlib_win_t *win, opts_t *opts){
 	return 0;
 }
 
+int cmd_win_list(xlib_t *xobj, xlib_win_t *win, opts_t *opts){
+	// NOTE checking for a valid desktop mirrors the behaviour of xdotool
+	if(win->name[0] != 0 && win->desktop != -1 && (!opts->only_visible || win->visible))
+		INFO("%u\n", (unsigned int)win->id);
+
+	if(xlib_win_childs(xobj, win) != 0)
+		return -1;
+
+	for(size_t i=0; i<win->nchilds; i++)
+		cmd_win_list(xobj, win->childs + i, opts);
+
+	return 0;
+}
+
 int cmd_win_focus(xlib_t *xobj, xlib_win_t *win, opts_t *opts){
 	return xlib_win_focus(xobj, win);
 }

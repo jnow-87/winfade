@@ -18,7 +18,7 @@ int main(int argc, char **argv){
 	if(xlib_init(&xobj, 0x0) != 0)
 		return 1;
 
-	win.id = (opts.win != 0) ? opts.win : xobj.focus;
+	win.id = (opts.win == -1) ? xobj.root : ((opts.win != 0) ? (Window)opts.win : xobj.focus);
 
 	if(xlib_win_init(&xobj, win.id, &win) == 0){
 		r = opts.cmd->hdlr(&xobj, &win, &opts);
@@ -27,6 +27,7 @@ int main(int argc, char **argv){
 	else
 		r = ERROR("initialising window %d\n", win.id);
 
+	xlib_win_destroy(&win);
 	xlib_destroy(&xobj);
 
 	return -r;

@@ -65,10 +65,13 @@ int xlib_win_init(xlib_t *xobj, Window id, xlib_win_t *win){
 	win->id = id;
 	win->monitor = 0;
 	win->desktop = -1;
+	win->nchilds = 0;
+	win->childs = 0x0;
 
 	if(XGetWindowAttributes(xobj->dpy, id, &attrs) == 0)
 		return -1;
 
+	/* position and geometry */
 	XTranslateCoordinates(xobj->dpy, id, xobj->root, attrs.x, attrs.y, &win->left, &win->top, &dummy);
 
 	win->width = attrs.width;
@@ -89,10 +92,44 @@ int xlib_win_init(xlib_t *xobj, Window id, xlib_win_t *win){
 	win->right = win->left + win->width;
 	win->bottom = win->top + win->height;
 
+	/* name */
+	win->name[0] = 0;
+	win_read_prop(xobj, win->id, "WM_NAME", sizeof(char), sizeof(win->name), &win->name);
+	win->name[sizeof(win->name) - 1] = 0;
+
+	/* monitor */
 	xlib_win_match_monitor(xobj, win);
 	(void)win_read_prop(xobj, id, "_NET_WM_DESKTOP", sizeof(int), 1, &win->desktop);
 
+	/* visibility */
+	win->visible = (attrs.map_state == IsViewable);
+
 	return 0;
+}
+
+void xlib_win_destroy(xlib_win_t *win){
+	for(size_t i=0; i<win->nchilds; i++)
+		xlib_win_destroy(win->childs + i);
+
+	free(win->childs);
+}
+
+int xlib_win_childs(xlib_t *xobj, xlib_win_t *win){
+	int r = 0;
+	Window dummy;
+	Window *childs;
+
+
+	XQueryTree(xobj->dpy, win->id, &dummy, &dummy, &childs, &win->nchilds);
+	win->childs = calloc(win->nchilds, sizeof(xlib_win_t));
+
+	for(size_t i=0; i<win->nchilds && r==0; i++)
+		r |= xlib_win_init(xobj, childs[i], win->childs + i);
+
+	if(childs != 0x0)
+		XFree(childs);
+
+	return r;
 }
 
 void xlib_win_match_monitor(xlib_t *xobj, xlib_win_t *win){

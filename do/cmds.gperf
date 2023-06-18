@@ -27,10 +27,12 @@ struct cmd_t;
 
 
 %%
-# command	hdlr
-info,		cmd_info
-focus,		cmd_focus
-map,		cmd_map
-unmap,		cmd_unmap
-move,		cmd_move
+# command		hdlr				required args
+screen-info,	cmd_screen_info,	0
+win-info,		cmd_win_info,		-1
+win-list,		cmd_win_list,		0
+win-focus,		cmd_win_focus,		0
+win-map,		cmd_win_map,		0
+win-unmap,		cmd_win_unmap,		0
+win-move,		cmd_win_move,		2
 %%

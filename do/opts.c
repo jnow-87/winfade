@@ -8,15 +8,21 @@
 
 
 /* macros */
-#define PROGNAME			"windo"
+#define PROGNAME				"xdo"
 
-#define DEFAULT_WIN			0
-#define DEFAULT_DESKTOP		-1
+#define DEFAULT_WIN				0
+#define DEFAULT_DESKTOP			-1
+#define DEFAULT_ONLY_VISIBLE	false
+#define DEFAULT_RELATIVE		false
 
 #define DEFAULT_OPTS (opts_t){ \
 	.win = DEFAULT_WIN, \
 	.desktop = DEFAULT_DESKTOP, \
 	.cmd = 0x0, \
+	.cmd_argc = 0, \
+	.cmd_argv = 0x0, \
+	.only_visible = DEFAULT_ONLY_VISIBLE, \
+	.relative = DEFAULT_RELATIVE, \
 }
 
 
@@ -28,21 +34,26 @@ static int version(void);
 /* global functions */
 int opts_parse(int argc, char **argv, opts_t *opts){
 	int opt;
+	cmd_t const *cmd;
 	struct option const long_opt[] = {
-		{ .name = "id",			.has_arg = required_argument,	.flag = 0,	.val = 'i' },
-		{ .name = "desktop",	.has_arg = required_argument,	.flag = 0,	.val = 'd' },
-		{ .name = "version",	.has_arg = no_argument,			.flag = 0,	.val = 'V' },
-		{ .name = "help",		.has_arg = no_argument,			.flag = 0,	.val = 'h' },
+		{ .name = "id",				.has_arg = required_argument,	.flag = 0,	.val = 'i' },
+		{ .name = "desktop",		.has_arg = required_argument,	.flag = 0,	.val = 'd' },
+		{ .name = "only-visible",	.has_arg = no_argument,			.flag = 0,	.val = 'v' },
+		{ .name = "relative",		.has_arg = no_argument,			.flag = 0,	.val = 'r' },
+		{ .name = "version",		.has_arg = no_argument,			.flag = 0,	.val = 'V' },
+		{ .name = "help",			.has_arg = no_argument,			.flag = 0,	.val = 'h' },
 		{ 0, 0, 0, 0 }
 	};
 
 
 	*opts = DEFAULT_OPTS;
 
-	while((opt = getopt_long(argc, argv, ":i:d:Vh", long_opt, 0)) != -1){
+	while((opt = getopt_long(argc, argv, "+:i:d:rvVh", long_opt, 0)) != -1){
 		switch(opt){
-		case 'i':	opts->win = atoi(optarg); break;
+		case 'i':	opts->win = atoll(optarg); break;
 		case 'd':	opts->desktop = atoi(optarg); break;
+		case 'v':	opts->only_visible = true; break;
+		case 'r':	opts->relative = true; break;
 		case 'V':	return version();
 		case 'h':	return help(0x0);
 		case ':':	return help("missing argument to %s\n", argv[optind - 1]);
@@ -51,13 +62,17 @@ int opts_parse(int argc, char **argv, opts_t *opts){
 		}
 	}
 
-	if(argc - optind != 1)
-		return help("invalid number of arguments\n");
+	cmd = cmds_lookup(argv[optind], strlen(argv[optind]));
 
-	opts->cmd = cmds_lookup(argv[optind], strlen(argv[optind]));
-
-	if(opts->cmd == 0x0)
+	if(cmd == 0x0)
 		return help("unknown command %s\n", argv[optind]);
+
+	opts->cmd = cmd;
+	opts->cmd_argc = argc -optind - 1;
+	opts->cmd_argv = argv + optind + 1;
+
+	if(cmd->required_args >= 0 && opts->cmd_argc != cmd->required_args)
+		return help("invalid number of <command> arguments, expected %d\n", cmd->required_args);
 
 	return 0;
 }
@@ -75,28 +90,36 @@ static int help(char const *err, ...){
 	}
 
 	INFO(
-		"usage: " PROGNAME " [options] <command>\n"
+		"usage: " PROGNAME " [options] <command> <args>\n"
 		"\n"
 		"Commands:\n"
-		"    %-10.10s    %s\n"
-		"    %-10.10s    %s\n"
-		"    %-10.10s    %s\n"
-		"    %-10.10s    %s\n"
-		"    %-10.10s    %s\n"
+		"    %-25.25s    %s\n"
+		"    %-25.25s    %s\n"
+		"    %-25.25s    %s\n"
+		"    %-25.25s    %s\n"
+		"    %-25.25s    %s\n"
+		"    %-25.25s    %s\n"
+		"    %-25.25s    %s\n"
 		"\n"
 		"Options:\n"
 		"    %-20.20s    %s\n"
 		"    %-20.20s    %s\n"
+		"    %-20.20s    %s\n"
+		"    %-20.20s    %s\n"
 		"\n"
 		"    %-20.20s    %s\n"
 		"    %-20.20s    %s\n"
-		, "info", "print info on xlib and the target window"
-		, "focus", "move focus to the target window"
-		, "map", "map the target window"
-		, "unmap", "unmap the target window"
-		, "move", "move the target window: x+=5, y+=5, desktop according to --desktop"
-		, "-i, --id=<win>", "id of target window, default is the window in focus" DEFAULT(DEFAULT_WIN)
+		, "screen-info", "print information on connected screens"
+		, "win-info [{<property>}]", "print target window information"
+		, "win-list", "print window and child windows ids"
+		, "win-focus", "move focus to the target window"
+		, "win-map", "map the target window"
+		, "win-unmap", "unmap the target window"
+		, "win-move <x> <y>", "move the target window to <x>, <y> and the given desktop, cf. --desktop"
+		, "-i, --id=<win>", "id of target window, use -1 for the root window, default is the window in focus" DEFAULT(DEFAULT_WIN)
 		, "-d, --desktop=<num>", "target desktop number, default is the current one" DEFAULT(DEFAULT_DESKTOP)
+		, "-v, --only-visible", "only handle visible childs" DEFAULT(DEFAULT_ONLY_VISIBLE)
+		, "-r, --relative", "make operation relative to the window's current properties" DEFAULT(DEFAULT_RELATIVE)
 		, "-V, --version", "print version"
 		, "-h, --help", "print this message"
 	);

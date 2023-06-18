@@ -107,7 +107,7 @@ int cmd_fade(xlib_t *xobj, group_t *group, opts_t *opts){
 	// fade
 	for(size_t i=1; i<=opts->steps; i++){
 		for(size_t j=0; j<group->nwindows; j++)
-			xlib_win_move(xobj, group->windows + j, dx[j].delta, dy[j].delta);
+			xlib_win_move(xobj, group->windows + j, dx[j].delta, dy[j].delta, true);
 
 		xlib_sync(xobj);
 		usleep(opts->delay_ms * 1000);

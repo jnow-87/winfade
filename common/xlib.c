@@ -72,7 +72,7 @@ int xlib_win_init(xlib_t *xobj, Window id, xlib_win_t *win){
 		return -1;
 
 	/* position and geometry */
-	XTranslateCoordinates(xobj->dpy, id, xobj->root, attrs.x, attrs.y, &win->left, &win->top, &dummy);
+	XTranslateCoordinates(xobj->dpy, id, xobj->root, 0, 0, &win->left, &win->top, &dummy);
 
 	win->width = attrs.width;
 	win->height = attrs.height;
